@@ -14,8 +14,7 @@ env:
   CLOUDSMITH_SERVICE_SLUG: github_action  # Ensure this matches your Cloudsmith service account
 
 permissions:
-  contents: read
-  actions: write
+  
   id-token: write  # Required for OIDC authentication
 
 jobs:
