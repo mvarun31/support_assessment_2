@@ -26,7 +26,7 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
-          name: example_package
+          name: python-package
           path: dist
           repository: ${{ github.repository }}
           github-token: ${{ github.token }}
