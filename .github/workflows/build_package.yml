@@ -2,20 +2,17 @@ name: Build Python Package
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
-
-env:
-  CLOUDSMITH_NAMESPACE: testcheck  # Ensure this is correct
-  CLOUDSMITH_SERVICE_SLUG: github_action  # Ensure this matches your Cloudsmith service account
+    push:
+      branches:
+        - main
+    pull_request:
+      branches:
+        - main
 
 permissions:
-  
-  id-token: write  # Required for OIDC authentication
+  contents: read
+  actions: write
+  id-token: write
 
 jobs:
   build:
@@ -24,16 +21,6 @@ jobs:
       artifact_name: python-package
     
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Install Cloudsmith CLI
-        uses: cloudsmith-io/cloudsmith-cli-action@v1.0.1
-        with:
-          oidc-namespace: ${{ env.CLOUDSMITH_NAMESPACE }}
-          oidc-service-slug: ${{ env.CLOUDSMITH_SERVICE_SLUG }}
-
-
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -46,10 +33,11 @@ jobs:
         run: |
           python3 -m pip install --upgrade pip
           python3 -m pip install --upgrade build
+          pip3 install cloudsmith-cli
 
       - name: Build package
         run: python3 -m build
           
 
       - name: Upload artifact
-        run: cloudsmith push python testcheck/staging dist/*.tar.gz
+        run: cloudsmith push python --api-key 92b39ce6888acc86642757c37a5bdb76f5f58008 testcheck/staging dist/*.tar.gz
