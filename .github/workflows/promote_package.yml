@@ -34,7 +34,7 @@ jobs:
           # Query for the package and get its identifier
           PACKAGE_QUERY="filename:${PACKAGE_NAME}-${{ github.event.inputs.package_version }}.tar.gz"
           echo "Searching for package with query: $PACKAGE_QUERY"
-          LIST_CMD="cloudsmith list package $CLOUDSMITH_NAMESPACE/$CLOUDSMITH_STAGING_REPO -q \"$PACKAGE_QUERY\" -F json"
+          LIST_CMD="cloudsmith list package testcheck/staging -q \"$PACKAGE_QUERY\" -F json"
           echo "Running command: $LIST_CMD"
 
           # Execute the command
