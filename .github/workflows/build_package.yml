@@ -21,6 +21,12 @@ jobs:
       artifact_name: python-package
     
     steps:
+      - name: Install Cloudsmith CLI
+        uses: cloudsmith-io/cloudsmith-cli-action@v1.0.1
+        with:
+          oidc-namespace: ${{ env.CLOUDSMITH_NAMESPACE }}
+          oidc-service-slug: ${{ env.CLOUDSMITH_SERVICE_SLUG }}
+
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -33,11 +39,10 @@ jobs:
         run: |
           python3 -m pip install --upgrade pip
           python3 -m pip install --upgrade build
-          pip3 install cloudsmith-cli
 
       - name: Build package
         run: python3 -m build
           
 
       - name: Upload artifact
-        run: cloudsmith push python --api-key 92b39ce6888acc86642757c37a5bdb76f5f58008 testcheck/staging dist/*.tar.gz
+        run: cloudsmith push python testcheck/staging dist/*.tar.gz
