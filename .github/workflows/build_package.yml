@@ -33,11 +33,15 @@ jobs:
         run: |
           python3 -m pip install --upgrade pip
           python3 -m pip install --upgrade build
-          pip3 install cloudsmith-cli
 
       - name: Build package
         run: python3 -m build
           
 
       - name: Upload artifact
-        run: cloudsmith push python --api-key 92b39ce6888acc86642757c37a5bdb76f5f58008 testcheck/staging dist/*.tar.gz
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-package
+          path: dist/
+          if-no-files-found: error
+          retention-days: 5
