@@ -3,7 +3,9 @@ name: Promote Python Package
 on:
    workflow_dispatch:
      inputs:
-       package_id:
+       package_name:
+         type: string
+       package_version:
          type: string
 
 env:
@@ -26,17 +28,12 @@ jobs:
         with:
           oidc-namespace: ${{ env.CLOUDSMITH_NAMESPACE }}
           oidc-service-slug: ${{ env.CLOUDSMITH_SERVICE_SLUG }}
-      - name: Check object
-        run: |
-          cat << OBJECT
-          ${{ toJson(github.event.client_payload) }}
-          OBJECT
 
 
       - name: Get package identifier and promote
         run: |
           # Query for the package and get its identifier
-          PACKAGE_QUERY="filename:${PACKAGE_NAME}.tar.gz"
+          PACKAGE_QUERY="name:${package_name} AND version:${package_version}"
           echo "Searching for package with query: $PACKAGE_QUERY"
           PACKAGE_DATA=$(cloudsmith list package ${{ env.CLOUDSMITH_NAMESPACE }}/${{ env.CLOUDSMITH_STAGING_REPO }} -q "$PACKAGE_QUERY" -F json)
           # Extract the identifier_perm using jq
