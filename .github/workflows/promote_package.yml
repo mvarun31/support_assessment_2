@@ -34,7 +34,6 @@ jobs:
           oidc-service-slug: ${{ env.CLOUDSMITH_SERVICE_SLUG }}
 
       - name: Tag package as ready-for-production
-        if: github.event.inputs.event_type == 'tag'
         run: |
           PACKAGE_SLUG="${{ github.event.inputs.package_slug }}"
           echo "Tagging package: $PACKAGE_SLUG as 'ready-for-production'"
@@ -44,7 +43,6 @@ jobs:
         shell: bash
 
       - name: List and Promote Ready-for-Production Packages
-        if: github.event.inputs.event_type == 'promote'
         run: |
           echo "Fetching packages tagged as 'ready-for-production' in staging..."
           PACKAGE_DATA=$(cloudsmith list package \
