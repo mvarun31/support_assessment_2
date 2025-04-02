@@ -32,12 +32,6 @@ jobs:
         with:
           oidc-namespace: ${{ env.CLOUDSMITH_NAMESPACE }}
           oidc-service-slug: ${{ env.CLOUDSMITH_SERVICE_SLUG }}
-      - name: Print input values
-        run: |
-          echo "Package Name: ${{  }}"
-          echo "Package Version: ${{ github.event.inputs.package_version }}"
-        shell: bash
-
 
       - name: Get package identifier and promote
         run: |
