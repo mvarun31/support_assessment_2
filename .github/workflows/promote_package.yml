@@ -1,15 +1,7 @@
 name: Promote Python Package
 
 on:
-  repository_dispatch:
-    inputs:
-      package_version:
-        description: 'Package version to promote (e.g., 0.0.1)'
-        required: true
-        type: string
-      slug:
-          required: true
-          type: string
+  workflow_dispatch:
 
 env:
   CLOUDSMITH_NAMESPACE: ${{ vars.CLOUDSMITH_NAMESPACE }}
