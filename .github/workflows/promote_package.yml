@@ -7,7 +7,7 @@ on:
         description: 'Package version to promote (e.g., 0.0.1)'
         required: true
         type: string
-      package_name:
+      slug:
           required: true
           type: string
 
