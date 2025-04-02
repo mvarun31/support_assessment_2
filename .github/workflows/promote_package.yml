@@ -1,7 +1,7 @@
 name: Promote Python Package
 
 on:
-  workflow_dispatch:
+  repository_dispatch:
 
 env:
   CLOUDSMITH_NAMESPACE: ${{ vars.CLOUDSMITH_NAMESPACE }}
@@ -26,7 +26,7 @@ jobs:
       - name: Check object
         run: |
           cat << OBJECT
-          ${{ toJson(github) }}
+          ${{ toJson(github.event.client_payload) }}
           OBJECT
 
 
