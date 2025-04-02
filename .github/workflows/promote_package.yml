@@ -8,7 +8,7 @@ on:
          required: true
          type: string
        package_name:
-         description: 'Package version to promote (e.g., 0.0.1)'
+         description: 'Package name to promote (e.g., example_package)'
          required: true
          type: string
 
@@ -17,7 +17,6 @@ env:
   CLOUDSMITH_STAGING_REPO: 'staging'
   CLOUDSMITH_PRODUCTION_REPO: 'production'
   CLOUDSMITH_SERVICE_SLUG: ${{ vars.CLOUDSMITH_SERVICE_SLUG }}
-  PACKAGE_NAME: 'example_package'
 
 permissions:
   id-token: write
@@ -33,22 +32,35 @@ jobs:
           oidc-namespace: ${{ env.CLOUDSMITH_NAMESPACE }}
           oidc-service-slug: ${{ env.CLOUDSMITH_SERVICE_SLUG }}
 
+      - name: Print input values
+        run: |
+          echo "Package Name: ${{ github.event.inputs.package_name }}"
+          echo "Package Version: ${{ github.event.inputs.package_version }}"
+        shell: bash
+
       - name: Get package identifier and promote
         run: |
+          PACKAGE_NAME="${{ github.event.inputs.package_name }}"
+          PACKAGE_VERSION="${{ github.event.inputs.package_version }}"
+
+          echo "Package Name: $PACKAGE_NAME"
+          echo "Package Version: $PACKAGE_VERSION"
+
           # Query for the package and get its identifier
-          PACKAGE_QUERY="name:${github.event.inputs.package_name} AND version:${github.event.inputs.package_version}"
+          PACKAGE_QUERY="name:$PACKAGE_NAME AND version:$PACKAGE_VERSION"
           echo "Searching for package with query: $PACKAGE_QUERY"
-          PACKAGE_DATA=$(cloudsmith list package ${{ env.CLOUDSMITH_NAMESPACE }}/${{ env.CLOUDSMITH_STAGING_REPO }} -q "$PACKAGE_QUERY" -F json)
-          # Extract the identifier_perm using jq
-          IDENTIFIER=$(echo "$PACKAGE_DATA" | jq -r '.data[0].identifier_perm')
           
+          PACKAGE_DATA=$(cloudsmith list package ${{ env.CLOUDSMITH_NAMESPACE }}/${{ env.CLOUDSMITH_STAGING_REPO }} -q "$PACKAGE_QUERY" -F json)
+          
+          IDENTIFIER=$(echo "$PACKAGE_DATA" | jq -r '.data[0].identifier_perm')
+
           if [ -z "$IDENTIFIER" ] || [ "$IDENTIFIER" = "null" ]; then
             echo "Failed to find package identifier"
             exit 1
           fi
-          
+
           echo "Found package identifier: $IDENTIFIER"
-          
+
           # Promote package using the identifier
           cloudsmith mv --yes \
             ${{ env.CLOUDSMITH_NAMESPACE }}/${{ env.CLOUDSMITH_STAGING_REPO }}/$IDENTIFIER \
