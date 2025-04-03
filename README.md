@@ -1,39 +1,55 @@
-**Welcome to Cloudsmith Support Assessment**
+# Python Package with GitHub Actions Workflows
 
-Please review the documentation provided by the recruiter for full instructions.
+This repository contains a basic Python package structure along with three GitHub Actions workflows for automating the build, release, and promotion of packages to Cloudsmith.
 
-**Repository Overview**
+## Project Structure
 
-This repository contains a simple Python package that can be built and published to Cloudsmith using GitHub Actions.
+```
+.github/
+├── workflows/
+│   ├── build_package.yml
+│   ├── promote_package.yml
+│   ├── release_package.yml
+src/
+├── example_package/
+│   ├── __init__.py
+│   ├── example.py
+README.md
+pyproject.toml
+```
 
-**Setup**
+## Workflows
 
-1. Clone the repository to your local machine
-2. Create a new private repo in your Github namespace
-3. Upload the code to the newly created Github repo
-4. Start debugging!
-5. Make sure to share access with the appointed people in the email
-6. Include a markdown file which includes all 6 issues found 
+### 1. Build Package Workflow (`build_package.yml`)
+This workflow is triggered on `push` and `pull_request` events to the `main` branch. It:
+- Checks out the code
+- Sets up Python
+- Installs dependencies
+- Builds the package
+- Uploads the package artifact
 
-**Build and Publish Process**
+### 2. Release Package Workflow (`release_package.yml`)
+Triggered upon successful completion of the build workflow, it:
+- Downloads the built package
+- Installs Cloudsmith CLI
+- Uploads the package to the Cloudsmith staging repository
 
-The process involves three workflows:
+### 3. Promote Package Workflow (`promote_package.yml`)
+Manually triggered via `workflow_dispatch`, it:
+- Tags a package as "ready-for-production"
+- Lists packages tagged as "ready-for-production"
+- Promotes them from staging to production in Cloudsmith
 
-### 1. `build_package.yml`
+## Cloudsmith Environment Variables
+This repository uses GitHub Actions environment variables to manage Cloudsmith uploads:
+- `CLOUDSMITH_NAMESPACE`: The Cloudsmith namespace
+- `CLOUDSMITH_REPOSITORY`: Target repository (e.g., `staging`)
+- `CLOUDSMITH_SERVICE_SLUG`: Cloudsmith service slug
 
-* Triggered by a push or pull request to the main branch.
-* Builds a Python package and saves it as an artifact in GitHub Actions.
+## Running Workflows
+- The build workflow runs automatically on `push` and `pull_request`
+- The release workflow runs after a successful build
+- The promote workflow must be triggered manually
 
-### 2. `realease_package.yml`
-
-* Triggered by the `build_package.yml` workflow completing successfully.
-* Downloads the artifact from GitHub Actions and pushes it to the staging repository on Cloudsmith.
-
-### 3. `promote_package.yml`
-
-* Triggered manually by the repository maintainer.
-* Promotes the package from the staging repository to the production repository on Cloudsmith.
-
-**Authentication**
-
-OIDC Authentication must be used for the project, API Key solutions will be rejected.
+## License
+This project is licensed under the MIT License.
